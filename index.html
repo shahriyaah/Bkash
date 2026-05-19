@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kawaii bKash Fee Calculator</title>
+
+  <!-- Cute Rounded Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #060816;
+      --bg-mid: #0d1330;
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.14);
+      --text: #f6f8ff;
+      --muted: #cdd3ff;
+      --pink: #ff8ad8;
+      --blue: #7ec8ff;
+      --purple: #b892ff;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      --glass-blur: blur(18px);
+    }
+
+    body {
+      font-family: 'Fredoka', sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top left, #1a1f55 0%, transparent 40%),
+        radial-gradient(circle at bottom right, #26124b 0%, transparent 40%),
+        linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      color: var(--text);
+    }
+
+    /* Animated Fluid Background */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.45;
+      animation: floatBlob 16s infinite ease-in-out alternate;
+      z-index: 0;
+    }
+
+    .blob.one {
+      width: 350px;
+      height: 350px;
+      background: #ff66cc;
+      top: -80px;
+      left: -80px;
+    }
+
+    .blob.two {
+      width: 300px;
+      height: 300px;
+      background: #6fa8ff;
+      bottom: -100px;
+      right: -50px;
+      animation-delay: 3s;
+    }
+
+    .blob.three {
+      width: 240px;
+      height: 240px;
+      background: #9c7dff;
+      top: 40%;
+      left: 60%;
+      animation-delay: 6s;
+    }
+
+    @keyframes floatBlob {
+      0% {
+        transform: translate(0px, 0px) scale(1);
+      }
+      50% {
+        transform: translate(40px, -30px) scale(1.12);
+      }
+      100% {
+        transform: translate(-30px, 30px) scale(0.92);
+      }
+    }
+
+    /* Main Card */
+    .calculator {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 430px;
+      background: var(--card-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .calculator::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 30px;
+      padding: 1px;
+      background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.4),
+        rgba(255,255,255,0.05)
+      );
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .logo {
+      width: 74px;
+      height: 74px;
+      margin: 0 auto 18px;
+      border-radius: 24px;
+      background: linear-gradient(145deg, #ff66c4, #ff8de1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow:
+        0 10px 25px rgba(255, 102, 196, 0.35),
+        0 0 25px rgba(255, 102, 196, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .highlight {
+      color: var(--pink);
+      font-weight: 500;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 26px;
+    }
+
+    .currency {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      height: 72px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.07);
+      border-radius: 24px;
+      outline: none;
+      color: white;
+      padding: 0 20px 0 55px;
+      font-size: 1.3rem;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 0 0 rgba(255,255,255,0);
+    }
+
+    input::placeholder {
+      color: rgba(255,255,255,0.45);
+    }
+
+    input:focus {
+      border-color: rgba(126, 200, 255, 0.5);
+      background: rgba(255,255,255,0.1);
+      box-shadow:
+        0 0 0 5px rgba(126, 200, 255, 0.08),
+        0 0 30px rgba(126, 200, 255, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .result-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .result-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .value {
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: white;
+      word-break: break-word;
+    }
+
+    .fee {
+      color: var(--pink);
+    }
+
+    .total {
+      color: var(--blue);
+    }
+
+    .rate-tag {
+      margin-top: 22px;
+      text-align: center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .rate-tag span {
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 520px) {
+      .calculator {
+        padding: 24px;
+        border-radius: 26px;
+      }
+
+      h1 {
+        font-size: 1.7rem;
+      }
+
+      .value {
+        font-size: 1.45rem;
+      }
+
+      input {
+        height: 66px;
+        font-size: 1.15rem;
+      }
+
+      .logo {
+        width: 68px;
+        height: 68px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Animated Blobs -->
+  <div class="blob one"></div>
+  <div class="blob two"></div>
+  <div class="blob three"></div>
+
+  <!-- Calculator -->
+  <div class="calculator">
+    <div class="logo">💸</div>
+
+    <h1>bKash Fee Calculator</h1>
+
+    <p class="subtitle">
+      Instantly calculate your cute little cash out fee with the premium
+      <span class="highlight">1.49%</span> rate ✨
+    </p>
+
+    <div class="input-group">
+      <span class="currency">৳</span>
+      <input
+        type="number"
+        id="amount"
+        placeholder="Enter cash out amount"
+        min="0"
+        inputmode="numeric"
+      />
+    </div>
+
+    <div class="results">
+
+      <div class="result-card">
+        <div class="label">Cash Out Fee</div>
+        <div class="value fee" id="fee">0.00 BDT</div>
+      </div>
+
+      <div class="result-card">
+        <div class="label">Total Amount Needed</div>
+        <div class="value total" id="total">0.00 BDT</div>
+      </div>
+
+    </div>
+
+    <div class="rate-tag">
+      Premium Rate: <span>14.90 BDT</span> per 1,000 BDT
+    </div>
+  </div>
+
+  <script>
+    const amountInput = document.getElementById("amount");
+    const feeText = document.getElementById("fee");
+    const totalText = document.getElementById("total");
+
+    const CASH_OUT_RATE = 0.0149;
+
+    function formatCurrency(value) {
+      return `${value.toFixed(2)} BDT`;
+    }
+
+    function calculateFee() {
+      const amount = parseFloat(amountInput.value) || 0;
+
+      const fee = amount * CASH_OUT_RATE;
+      const total = amount + fee;
+
+      feeText.textContent = formatCurrency(fee);
+      totalText.textContent = formatCurrency(total);
+    }
+
+    amountInput.addEventListener("input", calculateFee);
+
+    calculateFee();
+  </script>
+
+</body>
+</html>
