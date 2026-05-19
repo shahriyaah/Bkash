@@ -3,369 +3,641 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kawaii bKash Fee Calculator</title>
-
-  <!-- Cute Rounded Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>bKash Fee Calculator ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* ─── CSS Variables ─────────────────────────────────────────── */
     :root {
-      --bg-dark: #060816;
-      --bg-mid: #0d1330;
-      --card-bg: rgba(255, 255, 255, 0.08);
-      --border: rgba(255, 255, 255, 0.14);
-      --text: #f6f8ff;
-      --muted: #cdd3ff;
-      --pink: #ff8ad8;
-      --blue: #7ec8ff;
-      --purple: #b892ff;
-      --shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
-      --glass-blur: blur(18px);
+      --bg-deep:        #080c1f;
+      --bg-mid:         #0d1235;
+      --card-glass:     rgba(255, 255, 255, 0.055);
+      --card-border:    rgba(255, 255, 255, 0.10);
+      --card-shadow:    0 24px 80px rgba(0, 0, 0, 0.55);
+
+      --pink:           #ff6eb4;
+      --pink-soft:      #ffb3d9;
+      --pink-glow:      rgba(255, 110, 180, 0.35);
+      --blue-pastel:    #7eb8ff;
+      --blue-glow:      rgba(126, 184, 255, 0.30);
+      --mint:           #80ffdb;
+      --mint-glow:      rgba(128, 255, 219, 0.25);
+
+      --text-white:     #f0f4ff;
+      --text-muted:     rgba(200, 210, 240, 0.60);
+      --text-label:     rgba(200, 218, 255, 0.78);
+
+      --input-bg:       rgba(255, 255, 255, 0.07);
+      --input-border:   rgba(126, 184, 255, 0.30);
+      --input-focus:    rgba(255, 110, 180, 0.55);
+
+      --radius-card:    28px;
+      --radius-input:   18px;
+      --radius-badge:   50px;
+
+      --font:           'Fredoka', sans-serif;
     }
 
+    /* ─── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ─── Body & Background ─────────────────────────────────────── */
     body {
-      font-family: 'Fredoka', sans-serif;
       min-height: 100vh;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at top left, #1a1f55 0%, transparent 40%),
-        radial-gradient(circle at bottom right, #26124b 0%, transparent 40%),
-        linear-gradient(135deg, var(--bg-dark), var(--bg-mid));
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
-      position: relative;
-      color: var(--text);
+      background: var(--bg-deep);
+      font-family: var(--font);
+      overflow-x: hidden;
+      padding: 20px;
     }
 
-    /* Animated Fluid Background */
+    /* ─── Animated Background Canvas ───────────────────────────── */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    /* Blob base */
     .blob {
       position: absolute;
       border-radius: 50%;
-      filter: blur(80px);
+      filter: blur(90px);
+      opacity: 0.55;
+      will-change: transform;
+    }
+
+    .blob-1 {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, #5b21b6 0%, #1e1b4b 70%);
+      top: -160px; left: -160px;
+      animation: drift1 18s ease-in-out infinite alternate;
+    }
+    .blob-2 {
+      width: 460px; height: 460px;
+      background: radial-gradient(circle, #be185d 0%, #4c0519 70%);
+      bottom: -140px; right: -140px;
+      animation: drift2 22s ease-in-out infinite alternate;
+    }
+    .blob-3 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, #1d4ed8 0%, #0c1a6b 70%);
+      top: 40%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: drift3 26s ease-in-out infinite alternate;
+    }
+    .blob-4 {
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, #0e7490 0%, #083344 70%);
+      top: 10%; right: 10%;
+      animation: drift4 20s ease-in-out infinite alternate;
+      opacity: 0.40;
+    }
+    .blob-5 {
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, #7c3aed 0%, #2e1065 70%);
+      bottom: 15%; left: 10%;
+      animation: drift5 24s ease-in-out infinite alternate;
       opacity: 0.45;
-      animation: floatBlob 16s infinite ease-in-out alternate;
-      z-index: 0;
     }
 
-    .blob.one {
-      width: 350px;
-      height: 350px;
-      background: #ff66cc;
-      top: -80px;
-      left: -80px;
+    @keyframes drift1 {
+      0%   { transform: translate(0px,   0px)   scale(1.00); }
+      33%  { transform: translate(80px,  60px)  scale(1.10); }
+      66%  { transform: translate(40px,  120px) scale(0.95); }
+      100% { transform: translate(100px, 40px)  scale(1.05); }
+    }
+    @keyframes drift2 {
+      0%   { transform: translate(0px,   0px)   scale(1.00); }
+      33%  { transform: translate(-70px, -50px) scale(1.08); }
+      66%  { transform: translate(-30px,-110px) scale(0.93); }
+      100% { transform: translate(-90px, -30px) scale(1.06); }
+    }
+    @keyframes drift3 {
+      0%   { transform: translate(-50%, -50%) scale(1.00); }
+      25%  { transform: translate(-50%, -50%) scale(1.15) rotate(30deg); }
+      50%  { transform: translate(-50%, -50%) scale(0.90) rotate(60deg); }
+      75%  { transform: translate(-50%, -50%) scale(1.10) rotate(20deg); }
+      100% { transform: translate(-50%, -50%) scale(1.05) rotate(-10deg); }
+    }
+    @keyframes drift4 {
+      0%   { transform: translate(0px,  0px);  }
+      50%  { transform: translate(-60px, 80px);}
+      100% { transform: translate(-30px, 40px);}
+    }
+    @keyframes drift5 {
+      0%   { transform: translate(0px, 0px);   }
+      50%  { transform: translate(50px, -60px);}
+      100% { transform: translate(20px,-30px); }
     }
 
-    .blob.two {
-      width: 300px;
-      height: 300px;
-      background: #6fa8ff;
-      bottom: -100px;
-      right: -50px;
-      animation-delay: 3s;
-    }
-
-    .blob.three {
-      width: 240px;
-      height: 240px;
-      background: #9c7dff;
-      top: 40%;
-      left: 60%;
-      animation-delay: 6s;
-    }
-
-    @keyframes floatBlob {
-      0% {
-        transform: translate(0px, 0px) scale(1);
-      }
-      50% {
-        transform: translate(40px, -30px) scale(1.12);
-      }
-      100% {
-        transform: translate(-30px, 30px) scale(0.92);
-      }
-    }
-
-    /* Main Card */
-    .calculator {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      max-width: 430px;
-      background: var(--card-bg);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      padding: 32px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .calculator::before {
-      content: "";
+    /* Floating star / sparkle particles */
+    .stars {
       position: absolute;
       inset: 0;
-      border-radius: 30px;
-      padding: 1px;
-      background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.4),
-        rgba(255,255,255,0.05)
-      );
-      -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
       pointer-events: none;
     }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      animation: twinkle var(--dur, 3s) ease-in-out infinite alternate;
+    }
+    @keyframes twinkle {
+      0%   { opacity: 0.05; transform: scale(0.8); }
+      100% { opacity: 0.55; transform: scale(1.2); }
+    }
 
-    .logo {
-      width: 74px;
-      height: 74px;
-      margin: 0 auto 18px;
-      border-radius: 24px;
-      background: linear-gradient(145deg, #ff66c4, #ff8de1);
+    /* ─── Page layout ───────────────────────────────────────────── */
+    .page {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* ─── Floating Header Badge ─────────────────────────────────── */
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,110,180,0.15);
+      border: 1px solid rgba(255,110,180,0.35);
+      border-radius: var(--radius-badge);
+      padding: 8px 20px;
+      margin-bottom: 18px;
+      backdrop-filter: blur(12px);
+      animation: badgePop 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .header-badge span {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.6px;
+      color: var(--pink-soft);
+      text-transform: uppercase;
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--pink);
+      box-shadow: 0 0 8px var(--pink);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1);   opacity: 1;   }
+      50%      { transform: scale(1.5); opacity: 0.6; }
+    }
+
+    /* ─── Title ─────────────────────────────────────────────────── */
+    .title-wrap {
+      text-align: center;
+      margin-bottom: 10px;
+      animation: fadeUp 0.7s 0.15s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .title-wrap h1 {
+      font-size: clamp(28px, 7vw, 42px);
+      font-weight: 700;
+      color: var(--text-white);
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+    .title-wrap h1 .highlight {
+      background: linear-gradient(90deg, var(--pink), var(--blue-pastel));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .title-wrap p {
+      margin-top: 8px;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    /* ─── Glass Card ─────────────────────────────────────────────── */
+    .card {
+      width: 100%;
+      background: var(--card-glass);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-card);
+      padding: 36px 32px 32px;
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      box-shadow: var(--card-shadow),
+                  0 0 0 1px rgba(255,255,255,0.04) inset,
+                  0 1px 0 rgba(255,255,255,0.08) inset;
+      animation: cardReveal 0.8s 0.25s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    /* ─── Input Group ───────────────────────────────────────────── */
+    .input-group {
+      margin-bottom: 28px;
+    }
+    .input-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-label);
+      margin-bottom: 10px;
+    }
+    .input-wrapper {
+      position: relative;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      box-shadow:
-        0 10px 25px rgba(255, 102, 196, 0.35),
-        0 0 25px rgba(255, 102, 196, 0.2);
     }
-
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      font-weight: 600;
-      letter-spacing: 0.4px;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 30px;
-      line-height: 1.6;
-    }
-
-    .highlight {
-      color: var(--pink);
-      font-weight: 500;
-    }
-
-    .input-group {
-      position: relative;
-      margin-bottom: 26px;
-    }
-
-    .currency {
+    .taka-symbol {
       position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.2rem;
-      color: var(--blue);
+      left: 18px;
+      font-size: 22px;
       font-weight: 600;
+      color: var(--pink);
+      text-shadow: 0 0 12px var(--pink-glow);
+      pointer-events: none;
+      transition: color 0.3s, text-shadow 0.3s;
+      z-index: 2;
     }
-
-    input {
+    .amount-input {
       width: 100%;
-      height: 72px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.07);
-      border-radius: 24px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: var(--radius-input);
+      padding: 16px 20px 16px 50px;
+      font-family: var(--font);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-white);
       outline: none;
-      color: white;
-      padding: 0 20px 0 55px;
-      font-size: 1.3rem;
-      font-family: inherit;
-      transition: all 0.3s ease;
-      box-shadow: inset 0 0 0 rgba(255,255,255,0);
+      transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .amount-input::placeholder {
+      color: rgba(200,218,255,0.25);
+      font-weight: 400;
+    }
+    .amount-input:focus {
+      border-color: var(--pink);
+      background: rgba(255,110,180,0.07);
+      box-shadow: 0 0 0 4px rgba(255,110,180,0.12),
+                  0 0 20px rgba(255,110,180,0.15);
+    }
+    .amount-input:focus + .taka-symbol,
+    .input-wrapper:focus-within .taka-symbol {
+      color: var(--pink-soft);
+      text-shadow: 0 0 18px var(--pink);
     }
 
-    input::placeholder {
-      color: rgba(255,255,255,0.45);
+    /* Remove number arrows */
+    .amount-input::-webkit-inner-spin-button,
+    .amount-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    .amount-input[type=number] { -moz-appearance: textfield; }
+
+    /* ─── Divider ───────────────────────────────────────────────── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent);
+    }
+    .divider-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
     }
 
-    input:focus {
-      border-color: rgba(126, 200, 255, 0.5);
-      background: rgba(255,255,255,0.1);
-      box-shadow:
-        0 0 0 5px rgba(126, 200, 255, 0.08),
-        0 0 30px rgba(126, 200, 255, 0.12);
-      transform: translateY(-1px);
-    }
-
+    /* ─── Result Cards ──────────────────────────────────────────── */
     .results {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 14px;
     }
 
     .result-card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      padding: 20px;
-      transition: all 0.3s ease;
+      border-radius: 20px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
     .result-card:hover {
       transform: translateY(-2px);
-      background: rgba(255,255,255,0.08);
+    }
+    .result-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
 
-    .label {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 8px;
+    /* Fee card */
+    .result-card.fee {
+      background: linear-gradient(135deg, rgba(255,110,180,0.14) 0%, rgba(255,110,180,0.06) 100%);
+      border: 1px solid rgba(255,110,180,0.22);
+      box-shadow: 0 4px 24px rgba(255,110,180,0.10);
     }
+    .result-card.fee::before {
+      background: radial-gradient(ellipse at 30% 50%, rgba(255,110,180,0.12), transparent 70%);
+    }
+    .result-card.fee:hover::before { opacity: 1; }
+    .result-card.fee:hover { box-shadow: 0 8px 32px rgba(255,110,180,0.20); }
 
-    .value {
-      font-size: 1.7rem;
+    /* Total card */
+    .result-card.total {
+      background: linear-gradient(135deg, rgba(126,184,255,0.14) 0%, rgba(128,255,219,0.07) 100%);
+      border: 1px solid rgba(126,184,255,0.25);
+      box-shadow: 0 4px 24px rgba(126,184,255,0.10);
+    }
+    .result-card.total::before {
+      background: radial-gradient(ellipse at 70% 50%, rgba(126,184,255,0.12), transparent 70%);
+    }
+    .result-card.total:hover::before { opacity: 1; }
+    .result-card.total:hover { box-shadow: 0 8px 32px rgba(126,184,255,0.20); }
+
+    .result-info { flex: 1; }
+    .result-title {
+      font-size: 12px;
       font-weight: 600;
-      color: white;
-      word-break: break-word;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .result-card.fee  .result-title { color: rgba(255,179,217,0.75); }
+    .result-card.total .result-title { color: rgba(175,213,255,0.75); }
+
+    .result-subtitle {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
     }
 
-    .fee {
-      color: var(--pink);
+    .result-amount {
+      font-size: clamp(20px, 5vw, 26px);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
     }
+    .result-card.fee  .result-amount { color: var(--pink-soft); text-shadow: 0 0 20px rgba(255,110,180,0.50); }
+    .result-card.total .result-amount { color: var(--blue-pastel); text-shadow: 0 0 20px rgba(126,184,255,0.45); }
 
-    .total {
-      color: var(--blue);
+    .result-icon {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
     }
+    .result-card.fee  .result-icon { background: rgba(255,110,180,0.15); }
+    .result-card.total .result-icon { background: rgba(126,184,255,0.15); }
 
+    /* ─── Rate Info Tag ─────────────────────────────────────────── */
     .rate-tag {
       margin-top: 22px;
-      text-align: center;
-      background: rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
-      padding: 12px 18px;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      color: var(--muted);
+      border-radius: 14px;
     }
-
     .rate-tag span {
-      color: var(--purple);
-      font-weight: 600;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .rate-tag .rate-val {
+      color: var(--mint);
+      font-weight: 700;
+      text-shadow: 0 0 10px var(--mint-glow);
     }
 
-    /* Responsive */
-    @media (max-width: 520px) {
-      .calculator {
-        padding: 24px;
-        border-radius: 26px;
-      }
+    /* ─── Footer ─────────────────────────────────────────────────── */
+    .footer {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(160,180,220,0.40);
+      animation: fadeUp 0.7s 0.55s ease both;
+    }
+    .footer a { color: rgba(255,179,217,0.50); text-decoration: none; }
 
-      h1 {
-        font-size: 1.7rem;
-      }
+    /* ─── Keyframes ─────────────────────────────────────────────── */
+    @keyframes badgePop {
+      0%   { opacity: 0; transform: translateY(-16px) scale(0.85); }
+      100% { opacity: 1; transform: translateY(0)      scale(1);    }
+    }
+    @keyframes fadeUp {
+      0%   { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0);    }
+    }
+    @keyframes cardReveal {
+      0%   { opacity: 0; transform: translateY(32px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0)     scale(1);    }
+    }
 
-      .value {
-        font-size: 1.45rem;
-      }
+    /* Amount pop effect on value change */
+    @keyframes numPop {
+      0%   { transform: scale(1);    }
+      40%  { transform: scale(1.10); }
+      100% { transform: scale(1);    }
+    }
+    .pop {
+      animation: numPop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
 
-      input {
-        height: 66px;
-        font-size: 1.15rem;
-      }
-
-      .logo {
-        width: 68px;
-        height: 68px;
-      }
+    /* ─── Responsive ─────────────────────────────────────────────── */
+    @media (max-width: 500px) {
+      .card { padding: 28px 20px 24px; }
+      .result-card { padding: 16px 16px; }
     }
   </style>
 </head>
-
 <body>
 
-  <!-- Animated Blobs -->
-  <div class="blob one"></div>
-  <div class="blob two"></div>
-  <div class="blob three"></div>
-
-  <!-- Calculator -->
-  <div class="calculator">
-    <div class="logo">💸</div>
-
-    <h1>bKash Fee Calculator</h1>
-
-    <p class="subtitle">
-      Instantly calculate your cute little cash out fee with the premium
-      <span class="highlight">1.49%</span> rate ✨
-    </p>
-
-    <div class="input-group">
-      <span class="currency">৳</span>
-      <input
-        type="number"
-        id="amount"
-        placeholder="Enter cash out amount"
-        min="0"
-        inputmode="numeric"
-      />
-    </div>
-
-    <div class="results">
-
-      <div class="result-card">
-        <div class="label">Cash Out Fee</div>
-        <div class="value fee" id="fee">0.00 BDT</div>
-      </div>
-
-      <div class="result-card">
-        <div class="label">Total Amount Needed</div>
-        <div class="value total" id="total">0.00 BDT</div>
-      </div>
-
-    </div>
-
-    <div class="rate-tag">
-      Premium Rate: <span>14.90 BDT</span> per 1,000 BDT
-    </div>
+  <!-- ── Animated Background ── -->
+  <div class="bg-canvas" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+    <div class="blob blob-5"></div>
+    <div class="stars" id="stars"></div>
   </div>
 
+  <!-- ── Page ── -->
+  <main class="page">
+
+    <div class="header-badge">
+      <div class="badge-dot"></div>
+      <span>bKash · Cash Out</span>
+    </div>
+
+    <div class="title-wrap">
+      <h1>Fee <span class="highlight">Calculator</span></h1>
+      <p>Know exactly what you'll pay ✨</p>
+    </div>
+
+    <div class="card">
+
+      <!-- Input -->
+      <div class="input-group">
+        <label class="input-label" for="amount">Cash Out Amount</label>
+        <div class="input-wrapper">
+          <span class="taka-symbol" aria-hidden="true">৳</span>
+          <input
+            class="amount-input"
+            id="amount"
+            type="number"
+            min="0"
+            step="any"
+            placeholder="Enter amount…"
+            autocomplete="off"
+            inputmode="decimal"
+            aria-label="Cash Out Amount in BDT"
+          />
+        </div>
+      </div>
+
+      <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-label">Result</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- Results -->
+      <div class="results">
+
+        <!-- Fee -->
+        <div class="result-card fee">
+          <div class="result-icon">💸</div>
+          <div class="result-info">
+            <div class="result-title">Cash Out Fee</div>
+            <div class="result-subtitle">1.49% of amount</div>
+          </div>
+          <div class="result-amount" id="fee-amount">0.00 BDT</div>
+        </div>
+
+        <!-- Total -->
+        <div class="result-card total">
+          <div class="result-icon">💰</div>
+          <div class="result-info">
+            <div class="result-title">Total Needed</div>
+            <div class="result-subtitle">Amount + Fee</div>
+          </div>
+          <div class="result-amount" id="total-amount">0.00 BDT</div>
+        </div>
+
+      </div><!-- /results -->
+
+      <!-- Rate tag -->
+      <div class="rate-tag">
+        <span>Rate:</span>
+        <span class="rate-val">1.49%</span>
+        <span>·</span>
+        <span class="rate-val">৳14.90</span>
+        <span>per ৳1,000</span>
+      </div>
+
+    </div><!-- /card -->
+
+    <p class="footer">
+      For reference only &nbsp;·&nbsp; bKash rates may vary
+    </p>
+
+  </main>
+
   <script>
-    const amountInput = document.getElementById("amount");
-    const feeText = document.getElementById("fee");
-    const totalText = document.getElementById("total");
+    /* ─── Sparkle Stars Generator ─────────────────────────────── */
+    (function () {
+      const container = document.getElementById('stars');
+      const count = 60;
+      for (let i = 0; i < count; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 2.5 + 0.8;
+        s.style.cssText = `
+          width:  ${size}px;
+          height: ${size}px;
+          top:    ${Math.random() * 100}%;
+          left:   ${Math.random() * 100}%;
+          --dur:  ${(Math.random() * 4 + 2).toFixed(2)}s;
+          animation-delay: ${(Math.random() * 6).toFixed(2)}s;
+        `;
+        container.appendChild(s);
+      }
+    })();
 
-    const CASH_OUT_RATE = 0.0149;
+    /* ─── Calculator Logic ─────────────────────────────────────── */
+    const FEE_RATE  = 0.0149;
+    const input     = document.getElementById('amount');
+    const feeEl     = document.getElementById('fee-amount');
+    const totalEl   = document.getElementById('total-amount');
 
-    function formatCurrency(value) {
-      return `${value.toFixed(2)} BDT`;
+    function fmt(n) {
+      return n.toLocaleString('en-BD', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + ' BDT';
     }
 
-    function calculateFee() {
-      const amount = parseFloat(amountInput.value) || 0;
-
-      const fee = amount * CASH_OUT_RATE;
-      const total = amount + fee;
-
-      feeText.textContent = formatCurrency(fee);
-      totalText.textContent = formatCurrency(total);
+    function popEl(el) {
+      el.classList.remove('pop');
+      // Force reflow
+      void el.offsetWidth;
+      el.classList.add('pop');
     }
 
-    amountInput.addEventListener("input", calculateFee);
+    function calculate() {
+      const raw = parseFloat(input.value);
+      if (isNaN(raw) || raw < 0) {
+        feeEl.textContent   = '0.00 BDT';
+        totalEl.textContent = '0.00 BDT';
+        return;
+      }
+      const fee   = raw * FEE_RATE;
+      const total = raw + fee;
+      feeEl.textContent   = fmt(fee);
+      totalEl.textContent = fmt(total);
+      popEl(feeEl);
+      popEl(totalEl);
+    }
 
-    calculateFee();
+    input.addEventListener('input', calculate);
+
+    /* Reset pop class once animation ends */
+    [feeEl, totalEl].forEach(el => {
+      el.addEventListener('animationend', () => el.classList.remove('pop'));
+    });
   </script>
 
 </body>
 </html>
+
